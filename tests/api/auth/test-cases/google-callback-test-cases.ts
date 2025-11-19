@@ -24,6 +24,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "valid authentication via Google callback",
     requestPath: prepareCallbackPath(state, code),
     method,
+    isAuthorized: false,
     expectedStatus: 307,
   },
   {
@@ -31,6 +32,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "invalid state parameter",
     requestPath: prepareCallbackPath("invalid_state", code),
     method,
+    isAuthorized: false,
     expectedStatus: 307,
   },
   {
@@ -38,6 +40,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "missing state parameter",
     requestPath: prepareCallbackPath(undefined, code),
     method,
+    isAuthorized: false,
     expectedStatus: 307,
   },
   {
@@ -45,6 +48,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "invalid code parameter",
     requestPath: prepareCallbackPath(state, "invalid_code"),
     method,
+    isAuthorized: false,
     expectedStatus: 307,
   },
   {
@@ -52,6 +56,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "missing code parameter",
     requestPath: prepareCallbackPath(state, undefined),
     method,
+    isAuthorized: false,
     expectedStatus: 307,
   },
   {
@@ -59,6 +64,7 @@ export const googleCallbackTestCases: ApiTestCase[] = [
     testCaseDescription: "missing code and state parameters",
     requestPath: prepareCallbackPath(undefined, undefined),
     method,
+    isAuthorized: false,
     expectedStatus: 500,
   },
 ];
