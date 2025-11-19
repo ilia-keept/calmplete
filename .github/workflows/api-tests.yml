@@ -6,7 +6,8 @@ on:
     workflow_dispatch:
 
 jobs:
-    test:
+    api-tests:
+        name: Run API Tests
         runs-on: ubuntu-latest
 
         steps:
@@ -16,6 +17,9 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 20
+
+            - name: Install pnpm
+              run: npm install -g pnpm
 
             - name: Install dependencies
               run: pnpm install
