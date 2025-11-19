@@ -1,0 +1,24 @@
+{
+  "name": "tests-calmplete",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:api": "playwright test tests/api",
+    "test:e2e": "playwright test tests/e2e"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.22.0",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1",
+    "dotenv": "^17.2.3",
+    "newman": "^6.2.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
+  }
+}

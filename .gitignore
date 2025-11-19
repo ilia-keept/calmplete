@@ -1,0 +1,50 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+build/
+lib/
+out/
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Playwright
+.playwright/
+playwright-report/
+test-results/
+artifacts/
+videos/
+screenshots/
+traces/
+
+# Environment
+.env
+.env.local
+.env.*.local
+# keep example env in repo
+!.env.example
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Caches
+.cache/
+*.tmp
