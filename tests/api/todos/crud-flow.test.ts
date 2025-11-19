@@ -27,9 +27,13 @@ test.describe("Todos CRUD Flow", () => {
     await removeTodoById(request, currentTodoItem.id);
   });
 
-  test("create → get → update → toggle → delete → verify deletion of todo", async ({
+  test("create, read, update, toggle, delete a todo and verify it is removed", async ({
     request,
   }) => {
+    await test.step(`ensure that initial list of existing todos doesn't have todo with id ${todoTestId}`, async () => {
+      await ensureTodoNotInList(request, todoTestId);
+    });
+
     await test.step("create todo", async () => {
       const createResponse = await createInitialTodoWithId(
         request,
@@ -43,7 +47,9 @@ test.describe("Todos CRUD Flow", () => {
        * Which is acceptable, but should be confirmed with the backend team
        */
       expect(createResponse.status()).toBe(successfulMutationStatus);
+    });
 
+    await test.step(`retrieve the created todo and verify its fields match the provided values`, async () => {
       currentTodoItem = ensureDefined(
         await getTodoById(request, todoTestId),
         "Todo not found"
@@ -56,7 +62,7 @@ test.describe("Todos CRUD Flow", () => {
       });
     });
 
-    await test.step("update todo: title", async () => {
+    await test.step("update todo: update title", async () => {
       const updatePayload = {
         title: `${currentTodoItem.title} updated`,
       };
@@ -75,11 +81,10 @@ test.describe("Todos CRUD Flow", () => {
         "Todo not found"
       );
 
-      expect(currentTodoItem).toBeDefined();
       expect(currentTodoItem.title).toBe(updatePayload.title);
     });
 
-    await test.step("update todo: is completed toggle", async () => {
+    await test.step("update todo: toggle completion status", async () => {
       const isInitialTodoCompleted = currentTodoItem.isCompleted;
 
       const toggleResponse = await performRequest({
@@ -95,11 +100,10 @@ test.describe("Todos CRUD Flow", () => {
         "Todo not found"
       );
 
-      expect(currentTodoItem).toBeDefined();
       expect(currentTodoItem.isCompleted).toBe(!isInitialTodoCompleted);
     });
 
-    await test.step("delete todo and verify deletion", async () => {
+    await test.step("delete todo and verify it is not longer retrievable", async () => {
       const deleteResponse = await performRequest({
         request,
         method: "DELETE",
@@ -107,37 +111,24 @@ test.describe("Todos CRUD Flow", () => {
       });
 
       expect(deleteResponse.status()).toBe(successfulMutationStatus);
+    });
 
+    await test.step("verify the deleted todo is not retrievable by id", async () => {
       const notExistingTodo = await getTodoById(request, currentTodoItem.id);
       expect(notExistingTodo).toBeUndefined();
     });
 
-    await test.step("check deleted todo is not returned at list of all todos", async () => {
-      const listResponse = await performRequest({
-        request,
-        method: "GET",
-        path: "/api/Todos",
-      });
-
-      expect(listResponse.status()).toBe(200);
-
-      const todosList: z.infer<typeof todoSchema>[] = z
-        .array(todoSchema)
-        .parse(await listResponse.json());
-
-      const deletedTodo = todosList.find(
-        (todo) => todo.id === currentTodoItem.id
-      );
-      expect(deletedTodo).toBeUndefined();
+    await test.step("verify the deleted todo is not presented in the todos list", async () => {
+      await ensureTodoNotInList(request, currentTodoItem.id);
     });
   });
 });
 
-const getTodoById = async (request: APIRequestContext, id: string) => {
+const getTodoById = async (request: APIRequestContext, todoId: string) => {
   const response = await performRequest({
     request,
     method: "GET",
-    path: `/api/Todos/${id}`,
+    path: `/api/Todos/${todoId}`,
   });
 
   if (response.status() === 200) {
@@ -145,4 +136,24 @@ const getTodoById = async (request: APIRequestContext, id: string) => {
   }
 
   return undefined;
+};
+
+const ensureTodoNotInList = async (
+  request: APIRequestContext,
+  todoId: string
+) => {
+  const listResponse = await performRequest({
+    request,
+    method: "GET",
+    path: "/api/Todos",
+  });
+
+  expect(listResponse.status()).toBe(200);
+
+  const todosList: z.infer<typeof todoSchema>[] = z
+    .array(todoSchema)
+    .parse(await listResponse.json());
+
+  const todo = todosList.find((t) => t.id === todoId);
+  expect(todo).toBeUndefined();
 };
